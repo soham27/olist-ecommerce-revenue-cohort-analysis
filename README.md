@@ -258,5 +258,5 @@ Olist E-Commerce Revenue & Cohort Analysis/
 ├── outputs/
 │   └── dashboard.png
 │
-├── olist_powerBI.pbix
+├── olist_dashboard.pbix
 └── README.md
