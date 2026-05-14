@@ -4,6 +4,8 @@ An end-to-end data analysis project exploring Olist e-commerce transactions to u
 
 ## Dashboard Preview
 
+Click on the image for a better view.
+
 ![Dashboard Preview](outputs/dashboard.png)
 
 ## Project Overview
