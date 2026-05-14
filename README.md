@@ -2,6 +2,10 @@
 
 An end-to-end data analysis project exploring Olist e-commerce transactions to uncover revenue trends, category performance, seasonal demand patterns, and customer retention through cohort analysis.
 
+## Dashboard Preview
+
+![Dashboard Preview](outputs/dashboard.png)
+
 ## Project Overview
 
 This project analyzes Olist e-commerce transaction data to understand revenue performance, product category contribution, customer purchasing behavior, holiday-period order value, and customer retention across acquisition cohorts.
@@ -63,7 +67,7 @@ Key preparation steps included:
 
 ---
 
-## Dashboard Preview
+## Dashboard
 
 ![Dashboard Preview](outputs/dashboard.png)
 
