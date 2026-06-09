@@ -1,264 +1,330 @@
 # Olist E-Commerce Revenue & Cohort Analysis
 
-An end-to-end data analysis project exploring Olist e-commerce transactions to uncover revenue trends, category performance, seasonal demand patterns, and customer retention through cohort analysis.
+**Revenue growth, category concentration, and customer retention across ~96,000 delivered
+orders on a Brazilian e-commerce marketplace — and the acquisition-dependence problem
+hiding underneath the growth curve.**
 
-## Dashboard Preview
-
-_Click on the image for a clearer view._
-
-![Dashboard Preview](outputs/dashboard.png)
-
-## Project Overview
-
-This project analyzes Olist e-commerce transaction data to understand revenue performance, product category contribution, customer purchasing behavior, holiday-period order value, and customer retention across acquisition cohorts.
-
-The goal of this analysis is to answer practical business questions such as:  
-- How has revenue changed over time?
-- Which product categories drive the most revenue?
-- How much revenue comes from new versus returning customers?
-- Do holiday months show stronger order value?
-- How well are customers retained after their first purchase?
-
-The final output is a Power BI dashboard supported by SQL-based analysis in PostgreSQL.
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-336791?logo=postgresql&logoColor=white)
+![SQL](https://img.shields.io/badge/SQL-Analysis-blue)
+![Power BI](https://img.shields.io/badge/Power%20BI-Dashboard-F2C811?logo=powerbi&logoColor=black)
 
 ---
 
-## Business Objective
-
-Olist wants to better understand what drives revenue and whether customers return after their first purchase. This analysis focuses on revenue trends, category-level performance, customer type behavior, and cohort retention to identify opportunities for improving customer loyalty and repeat purchasing.
-
----
-
-## Tools Used
-
-- **PostgreSQL**: data storage, cleaning, joins, aggregations, cohort analysis, and reporting views  
-- **SQL**: business logic, revenue calculations, customer segmentation, cohort retention calculations  
-- **Power BI**: dashboard creation and visual analysis  
-- **VS Code**: project development environment  
-
----
-
-## Dataset
-
-The project uses the Olist Brazilian e-commerce dataset, which contains order, customer, product, payment, and delivery-related data from an online marketplace.
-
-Core tables used:
-
-- `orders`
-- `order_items`
-- `customers`
-- `products`
-- `payments`
-- `category_translation`
-
-The analysis focuses on delivered orders to ensure revenue calculations are based on completed transactions.
-
----
-
-## Data Preparation
-
-The raw Olist tables were loaded into PostgreSQL and transformed into analysis-ready views.
-
-Key preparation steps included:
-
-- Filtered transactions to include only delivered orders.
-- Joined order, customer, product, and order item tables into a clean analytical base view.
-- Used `customer_unique_id` to track repeat purchasing behavior across multiple orders.
-- Created reporting views for revenue trends, category performance, customer type analysis, holiday-period AOV change, and cohort retention.
-- Excluded month 0 from the cohort retention matrix to focus on repeat purchase behavior after the first order.
-
----
-
-## Dashboard
-
-![Dashboard Preview](outputs/dashboard.png)
-
-The dashboard summarizes:
-
-- Total gross revenue
-- Total orders
-- Average order value
-- Holiday average order value change
-- Monthly revenue trend
-- Revenue by customer type
-- Average order value by customer type
-- Top product categories by revenue
-- Customer cohort retention
-
----
-
-## Key Metrics
+## Headline
 
 | Metric | Value |
-|---|---:|
-| Total Gross Revenue | 15.42M |
-| Total Orders | 96K |
-| Average Order Value | 137.04 |
-| Holiday AOV Change | -2.67% |
+|---|---|
+| Delivered orders analysed | **96,478** |
+| Unique customers | **93,358** |
+| Time window | **Sep 2016 → Aug 2018** (23 months) |
+| Total gross revenue | **R$15.42M** (R$13.22M product + R$2.20M freight) |
+| Average order value | **R$137.04** |
+| Customers who ever placed a second order | **3.0%** |
+
+## TL;DR — Key findings
+
+1. **Revenue grew +143% year over year** — R$3.47M (Jan–Aug 2017) → R$8.45M (Jan–Aug 2018) — peaking at **R$1.15M in November 2017** (Black Friday), then plateauing at ~R$1.0–1.1M/month through 2018.
+2. **The growth is entirely acquisition-driven.** First-time orders generated **97.3% of product revenue**; only **3.0%** of 93,358 customers ever placed a second delivered order.
+3. **Cohort retention is near zero, in every cohort.** Month-1 retention for mature cohorts (500+ customers) averages **0.5%** and never exceeds 0.72%. Only ~1.4% of customers make any repeat purchase within six months. This is not a weak-cohort problem — it is structural.
+4. **Revenue is concentrated in a few categories** — the top 5 of 72 categories account for **39.8%** of product revenue (top 10 = 62.4%), led by Health & Beauty (9.3%) and Watches & Gifts (8.8%).
+5. **Returning customers spend *less*, not more** — average order value R$125.08 vs R$137.41 for first orders (**−9%**). Repeat purchases are not premium purchases.
+6. **Holiday months don't lift basket size.** Nov–Dec average order value is **−2.67%** vs the rest of the year. The November 2017 revenue peak was a *volume* story (7,289 orders), not a basket-size story.
+
+Each finding is expanded with supporting numbers and a business implication in
+[Findings & recommendations](#findings--recommendations) below.
 
 ---
 
-## Key Findings
+## Dashboard preview
 
-### 1. Revenue grew strongly before stabilizing in 2018
+Single-page Power BI dashboard reading directly from the PostgreSQL reporting views.
 
-Monthly gross revenue increased significantly from late 2016 through 2017. Revenue reached a higher run rate in 2018, staying close to the 1M monthly range for several months. This suggests that Olist experienced strong growth during the observed period before revenue began to stabilize.
+[![Dashboard Preview](outputs/dashboard.png)](outputs/dashboard.png)
 
-### 2. Revenue was concentrated in a small group of product categories
-
-The top revenue-driving categories were:
-
-- Health & Beauty
-- Watches & Gifts
-- Bed, Bath & Table
-- Sports & Leisure
-- Computers & Accessories
-
-These categories contributed a large share of total product revenue, indicating that marketplace performance was heavily influenced by a few high-performing segments.
-
-### 3. New customers drove the majority of revenue
-
-Revenue was overwhelmingly generated by new customers, while returning customers contributed a much smaller share. This suggests that Olist’s revenue growth during the period was more dependent on customer acquisition than repeat purchasing.
-
-From a business perspective, this creates both an opportunity and a risk: acquisition appears strong, but weak repeat purchasing may limit long-term customer lifetime value.
-
-### 4. Returning customers had slightly lower average order value than new customers
-
-Average order value was somewhat higher for new customers than returning customers. This may indicate that returning customers were not necessarily making larger or higher-value purchases after their first order.
-
-This finding suggests that improving repeat purchase incentives, personalized recommendations, or loyalty offers could help increase value from existing customers.
-
-### 5. Holiday-period average order value was lower than non-holiday months
-
-The holiday AOV change was **-2.67%**, meaning average order value during the defined holiday period was slightly lower than during non-holiday months.
-
-This does not necessarily mean holiday revenue was weaker overall. Instead, it suggests that holiday-period orders were, on average, smaller in value. This could be due to discounting, lower-priced seasonal purchases, or changes in product mix during holiday months.
-
-### 6. Customer retention was consistently low across cohorts
-
-Cohort analysis showed that most customer groups had very low repeat-purchase rates after their first order. Month 0 was excluded from the matrix, so the displayed values represent post-first-purchase retention.
-
-This indicates that many customers purchased once and did not return in later months. For Olist, this suggests an opportunity to improve retention through post-purchase engagement, targeted win-back campaigns, loyalty incentives, and category-specific recommendations.
+The dashboard covers: headline KPIs (gross revenue, orders, AOV, holiday AOV change),
+the monthly gross-revenue trend, revenue and AOV split by new vs returning customers,
+top product categories by revenue, and the customer cohort retention matrix.
 
 ---
 
-## Business Recommendations
+## The business problem
 
-### 1. Strengthen retention and win-back campaigns
+A marketplace that more than doubles revenue year over year looks healthy. But topline
+growth can hide a structural weakness: **if nearly all revenue comes from first-time
+buyers, growth is rented, not owned** — it lasts exactly as long as the acquisition
+spend behind it.
 
-Since repeat purchasing appears low, Olist could target one-time buyers with follow-up campaigns, personalized offers, or free-shipping incentives. Customers from weak retention cohorts could be prioritized for reactivation.
+This analysis separates Olist's revenue into its acquisition and retention components
+to answer the question a growth or CRM stakeholder would actually ask:
 
-### 2. Investigate high-performing product categories
+> *"Is our growth compounding — are customers coming back and buying more — or are we
+> buying every order with new-customer acquisition?"*
 
-Categories such as Health & Beauty, Watches & Gifts, and Bed, Bath & Table should be studied more closely to understand what drives their strong revenue performance. Olist could use these categories for targeted promotions, seller partnerships, or cross-sell strategies.
-
-### 3. Analyze retention by product category
-
-Low retention may not always indicate poor customer loyalty. Some categories naturally have longer repurchase cycles. A useful next step would be to compare retention by product category to determine whether low repeat purchasing is driven by customer experience issues or by the nature of the products being sold.
-
-### 4. Improve post-purchase engagement
-
-Customers who complete their first order could be encouraged to return through recommendation emails, discount codes, loyalty rewards, and reminders based on their original purchase category.
-
-### 5. Review holiday pricing and product mix
-
-The negative holiday AOV change suggests that holiday-period orders had lower average value. Olist could investigate whether this was caused by discounting, lower-priced items, or changes in category mix during holiday months.
+The answer (finding 2 and 3): almost entirely the latter, which reframes retention as
+Olist's largest untapped lever.
 
 ---
 
-## SQL Analysis Highlights
+## The data
 
-This project demonstrates the following SQL skills:
+| Attribute | Details |
+|---|---|
+| Source | [Olist Brazilian E-Commerce Public Dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) (Kaggle) — real, anonymised marketplace transactions |
+| Time window | Sep 2016 → Aug 2018 |
+| Scope | 96,478 **delivered** orders · 93,358 unique customers · 72 product categories |
+| Tables used | `orders`, `order_items`, `customers`, `products`, `category_translation` |
+| Currency | Brazilian reais (R$), nominal |
 
-- Multi-table joins
-- Common Table Expressions
-- Aggregations
-- Date truncation and time-based analysis
-- Customer segmentation
-- Cohort analysis
-- Reporting views
-- Business KPI calculations
+### Two scope decisions worth defending
 
-Key SQL outputs included:
+- **Delivered orders only.** Revenue is calculated from completed transactions.
+  Including shipped, processing, or cancelled orders would inflate revenue with money
+  Olist may never have collected. The filter is applied once, in the base view, so
+  every downstream metric inherits it.
+- **`customer_unique_id`, not `customer_id`.** In this dataset `customer_id` is unique
+  *per order* — using it would make every customer look new and silently destroy the
+  retention analysis. All repeat-purchase logic keys on `customer_unique_id`, which
+  identifies the person across orders. This is the single most consequential modelling
+  decision in the project.
 
-- `sales_base`
-- `vw_monthly_revenue`
-- `vw_category_performance`
-- `vw_new_vs_returning`
-- `vw_holiday_uplift`
-- `vw_cohort_retention`
-- `vw_kpi_summary`
+---
+
+## Findings & recommendations
+
+All findings are computed by the reporting views in
+[`sql/08_create_reporting_views.sql`](sql/08_create_reporting_views.sql) and surfaced
+on the Power BI dashboard.
+
+### 1. Revenue grew +143% YoY, then plateaued at a ~R$1M monthly run rate
+
+**Number.** Comparing like-for-like periods: Jan–Aug 2017 = R$3.47M gross revenue vs
+Jan–Aug 2018 = R$8.45M (**+143%**). Monthly revenue peaked at **R$1.15M in November
+2017** (Black Friday — also the largest cohort: 7,060 new customers) and held a
+~R$1.0–1.1M monthly range through 2018 with no sustained growth after Q1.
+
+**Source visual.** Monthly Gross Revenue line chart.
+
+**Business implication.** The hypergrowth phase ended around early 2018. From that
+point, growth has to come from somewhere other than momentum — which makes the
+retention findings below the central strategic question.
+
+### 2. Growth is acquisition-driven to an extreme degree
+
+**Number.** First-time orders: 93,613 orders, **R$12.86M (97.3% of product revenue)**.
+Returning-customer orders: 2,865 orders, R$0.36M (**2.7%**). Only **2,824 of 93,358
+customers (3.0%)** ever placed a second delivered order.
+
+**Source visual.** Revenue by Customer Type bar chart.
+
+**Business implication.** Olist's revenue engine is a one-shot funnel: acquire,
+convert once, lose. Every month's revenue must be re-purchased through acquisition.
+There is effectively no compounding customer base, and customer lifetime value ≈
+first-order value, which caps how much Olist can rationally spend to acquire a
+customer.
+
+### 3. Retention is uniformly near zero — a structural pattern, not a bad cohort
+
+**Number.** Across all 19 mature cohorts (≥500 customers), month-1 retention sits
+between **0.18% and 0.72%** (average ~0.5%), and only **~1.4%** of customers return
+within six months of their first purchase. No cohort — early or late, small or large,
+holiday or not — breaks the pattern.
+
+**Source visual.** Customer Cohort Retention matrix (month 0 excluded — it is 100% by
+definition and would compress the colour scale that makes the heatmap readable).
+
+**Business implication.** Because the pattern holds for *every* cohort, the cause is
+unlikely to be a specific campaign, season, or service failure. It is structural:
+either the product mix doesn't generate repurchase cycles, or the marketplace
+experience (Olist sells via storefronts on other channels) doesn't create a
+relationship the customer can return to. Distinguishing those two explanations is the
+top item in [Next steps](#next-steps).
+
+### 4. Revenue concentrates in a handful of categories
+
+**Number.** The top 5 of 72 categories drive **39.8%** of product revenue; the top 10
+drive **62.4%**.
+
+| Category | Product revenue | Share |
+|---|---:|---:|
+| Health & Beauty | R$1.23M | 9.3% |
+| Watches & Gifts | R$1.17M | 8.8% |
+| Bed, Bath & Table | R$1.02M | 7.7% |
+| Sports & Leisure | R$0.95M | 7.2% |
+| Computers & Accessories | R$0.89M | 6.7% |
+
+**Source visual.** Top Product Categories by Revenue bar chart.
+
+**Business implication.** Category strategy has leverage: promotions, seller
+recruitment, and inventory depth in the top 10 categories touch nearly two-thirds of
+revenue. Notably, the #1 category (Health & Beauty) is *replenishable* — the natural
+place to test whether retention can be manufactured (finding 3).
+
+### 5. Returning customers spend less per order, not more
+
+**Number.** AOV for returning-customer orders is **R$125.08** vs **R$137.41** for
+first orders (**−9%**).
+
+**Source visual.** Average Order Value by Customer Type bar chart.
+
+**Business implication.** The rare customers who do come back are not upgrading — if
+anything, second purchases skew smaller. A retention programme can't assume repeat
+buyers become high-value buyers by default; basket-building (bundles, cross-sell,
+free-shipping thresholds) must be designed into it.
+
+### 6. Holiday months are a volume play, not a basket play
+
+**Number.** Nov–Dec orders average **R$133.86** vs **R$137.53** in the rest of the
+year (**−2.67%**). Yet November 2017 was the single biggest revenue month (R$1.15M)
+on the strength of order *count*.
+
+**Source visual.** Holiday AOV Change KPI card + Monthly Gross Revenue trend.
+
+**Business implication.** Holiday demand brings more, slightly smaller orders —
+consistent with discounting and gift purchases. Planning should optimise for
+throughput (logistics capacity, seller stock) rather than expecting seasonal AOV
+uplift.
+
+### Synthesised recommendations
+
+1. **Treat retention as the largest untapped lever.** Repeat business is 2.7% of
+   revenue; even doubling the repeat rate from 3% to 6% adds roughly R$350K+ at
+   current AOV — without acquiring a single new customer.
+2. **Run the first retention experiments in replenishable categories.** Health &
+   Beauty is simultaneously the #1 revenue category and the most natural repurchase
+   cycle. Post-purchase replenishment reminders and category-specific win-back offers
+   are the cheapest test of whether the retention floor can move.
+3. **Design basket-building into any repeat-purchase programme** (finding 5):
+   returning buyers currently spend 9% less, so loyalty incentives should be
+   structured around order-value thresholds, not flat discounts.
+4. **Plan holiday peaks for volume, not value.** Capacity, fulfilment, and seller
+   stock matter more than premium pricing in November.
+5. **Before spending on retention, diagnose it** — the analysis in
+   [Next steps](#next-steps) (retention by category, delivery-delay impact, review
+   scores) determines whether low retention is a product-mix fact to accept or an
+   experience failure to fix.
 
 ---
 
 ## Methodology
 
-### Revenue Analysis
+The pipeline is deliberately simple and inspectable: **raw CSVs → PostgreSQL →
+one canonical base view → reporting views → Power BI.**
 
-Revenue was analyzed monthly using completed delivered orders. Gross revenue was calculated from order item price and freight value.
+| Stage | What was done | Artifact |
+|---|---|---|
+| 1. Sanity checks | Row counts, status distribution, date ranges, key uniqueness on the raw tables | [`sql/01_sanity_checks.sql`](sql/01_sanity_checks.sql) |
+| 2. Analytical base | `sales_base` view: delivered-orders filter + customer/product/category joins + `gross_revenue` computed once | [`sql/02_create_sales_base.sql`](sql/02_create_sales_base.sql) |
+| 3. Exploratory analysis | Monthly revenue, category performance, new-vs-returning, cohort retention, holiday AOV — each developed as a standalone query | [`sql/03`](sql/03_monthly_revenue.sql)–[`07`](sql/07_holiday_uplift.sql) |
+| 4. Reporting layer | The exploratory queries hardened into 7 named views that Power BI reads directly | [`sql/08_create_reporting_views.sql`](sql/08_create_reporting_views.sql) |
+| 5. Dashboard | Single-page Power BI report over the views | [`olist_dashboard.pbix`](olist_dashboard.pbix) |
 
-### Category Performance
+### Design decisions that protect the numbers
 
-Product revenue was aggregated by translated product category names to identify the top-performing categories.
+- **The SQL view layer is the single source of analytical truth.** Power BI contains
+  no business logic — every visual reads a `vw_*` view, so a wrong number can only be
+  wrong in one inspectable place, not in a hidden DAX measure.
+- **AOV is computed at order grain, not item grain.** Item-level rows are collapsed to
+  one row per order *before* averaging; otherwise multi-item orders would be
+  over-weighted and AOV would silently become "average item price".
+- **New vs returning is classified per order, not per customer.** A customer's first
+  order counts as New and all subsequent orders as Returning — so the revenue split
+  measures *behaviour over time*, not a static customer label.
+- **Gross revenue (price + freight) and product revenue (price only) are kept as
+  separate metrics** and never mixed: headline revenue is gross; AOV and category
+  shares use product revenue.
 
-### Customer Type Analysis
+### Reporting views (the analytical API)
 
-Customers were classified as new or returning based on their first observed purchase date using `customer_unique_id`.
-
-### Holiday AOV Analysis
-
-Holiday months were defined as November and December. Average order value during holiday months was compared against non-holiday months to measure holiday-period AOV change.
-
-### Cohort Retention Analysis
-
-Customers were grouped by their first purchase month. Retention was calculated as the percentage of customers from each cohort who returned in later months. Month 0 was excluded from the final matrix to focus on repeat purchasing behavior.
+| View | Drives | Question answered |
+|---|---|---|
+| `vw_kpi_summary` | KPI cards | Headline totals (one row) |
+| `vw_monthly_revenue` | Revenue trend line | How did revenue, orders, and customers move month to month? |
+| `vw_category_performance` | Category bar chart | Which categories drive revenue? |
+| `vw_new_vs_returning` | Customer-type bars | Acquisition vs retention revenue split |
+| `vw_holiday_summary` / `vw_holiday_uplift` | Holiday KPI card | Do Nov–Dec orders differ in value? |
+| `vw_cohort_retention` | Cohort matrix | Do customers come back after their first purchase? |
 
 ---
 
 ## Limitations
 
-- The dataset does not include marketing channel data, so customer acquisition source could not be analyzed.
-- The analysis uses observed transaction history only; customers may have purchased outside the available dataset period.
-- Holiday analysis was based on a simplified November–December definition.
-- Low retention may reflect product purchase frequency rather than customer dissatisfaction.
-- Some early cohorts had smaller sample sizes, which can create volatile retention percentages.
+The findings are robust, but they sit on these constraints:
+
+1. **The observation window truncates repeat cycles.** The data ends in Aug 2018, so
+   recent cohorts have had little time to repurchase. Retention figures are therefore
+   *floor* estimates — but the sub-1% month-1 pattern holds even for the earliest
+   cohorts with 18+ months of runway, so the structural conclusion stands.
+2. **The ~3% repeat rate is partly a known dataset characteristic.** Olist's public
+   dataset identifies customers via `customer_unique_id`; any repeat purchases that
+   identity-matching missed would raise true retention somewhat. It would not raise it
+   to healthy e-commerce levels (20–30% repeat is typical).
+3. **2016 data is a pilot-period stub** — 267 orders total, and November 2016 has zero
+   delivered orders. Growth comparisons therefore use 2017 vs 2018, never 2016.
+4. **"Holiday" is a simplified Nov–Dec definition.** Brazil's retail calendar has
+   other significant dates (Dia das Crianças in October, Dia dos Namorados in June)
+   that this binary flag ignores.
+5. **No marketing-channel data** — acquisition cost and channel attribution are
+   impossible, so "acquisition-driven growth" can be measured but not costed.
+6. **Revenue is nominal BRL.** Brazilian inflation over 2016–2018 (~3–6%/yr) modestly
+   flatters the growth rate.
 
 ---
 
-## Next Steps
+## Next steps
 
-Future improvements could include:
+In priority order — the first three all attack the same question: *is low retention a
+product-mix fact or an experience failure?*
 
-- Retention analysis by product category
-- Seller-level performance analysis
-- Delivery delay impact on customer retention
-- Review score analysis
-- Customer lifetime value estimation
-- Forecasting monthly revenue
-- Building a more detailed Power BI report with slicers by state, category, and time period
+1. **Retention by product category** — do replenishable categories (Health & Beauty)
+   actually retain better than durables (Furniture, Computers)?
+2. **Delivery-delay impact on repurchase** — join actual vs estimated delivery dates
+   to cohort behaviour; late first orders may kill second orders.
+3. **Review-score → repurchase linkage** using `order_reviews`.
+4. **Customer lifetime value estimation**, once the retention drivers are understood.
+5. **Seller-level performance analysis** — the marketplace's supply side.
+6. **Geographic split** (state-level revenue and retention) with dashboard slicers.
 
 ---
 
-## Project Structure
+## Repository structure
 
-```text
-Olist E-Commerce Revenue & Cohort Analysis/
-│
-├── data/
-│   └── raw Olist CSV files
-│
-├── sql/
-│   ├── 01_sanity_checks.sql
-│   ├── 02_create_sales_base.sql
-│   ├── 03_monthly_revenue.sql
-│   ├── 04_category_performance.sql
-│   ├── 05_new_vs_returning.sql
-│   ├── 06_cohort_retention.sql
-│   ├── 07_holiday_uplift.sql
-│   └── 08_create_reporting_views.sql
-│
+```
+.
+├── README.md
+├── olist_dashboard.pbix               Power BI dashboard (reads the vw_* views)
 ├── outputs/
-│   └── dashboard.png
-│
-├── olist_dashboard.pbix
-└── README.md
+│   └── dashboard.png                  Dashboard export used in this README
+└── sql/
+    ├── 01_sanity_checks.sql           Raw-table profiling and QA
+    ├── 02_create_sales_base.sql       Canonical delivered-orders base view
+    ├── 03_monthly_revenue.sql         Revenue trend exploration
+    ├── 04_category_performance.sql    Category revenue exploration
+    ├── 05_new_vs_returning.sql        Customer-type classification logic
+    ├── 06_cohort_retention.sql        Cohort matrix construction
+    ├── 07_holiday_uplift.sql          Holiday vs non-holiday AOV
+    └── 08_create_reporting_views.sql  The 7 production views Power BI reads
+```
+
+Raw data is not committed (≈125 MB of CSVs) — download it from
+[Kaggle](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce).
+
+---
+
+## How to reproduce
+
+1. Download the [Olist dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
+   from Kaggle.
+2. Create a PostgreSQL database (e.g. `olist_analytics`) and import the CSVs as tables:
+   `orders`, `order_items`, `customers`, `products`, `category_translation`
+   (pgAdmin's import tool or `\copy` both work).
+3. Run the SQL scripts in order, `01` → `08`, against that database.
+4. Open `olist_dashboard.pbix` in Power BI Desktop, point the data source at your
+   local PostgreSQL instance, and refresh.
+
+## Tech stack
+
+| Layer | Tool |
+|---|---|
+| Storage, modelling, analysis | PostgreSQL 18 |
+| Business logic | SQL (views, CTEs, window functions) |
+| Dashboard | Power BI Desktop |
